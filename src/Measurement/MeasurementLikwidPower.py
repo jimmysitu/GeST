@@ -34,7 +34,7 @@ class MeasurementLikwidPower(Measurement):
         for core in self.coresToUse:
                 execution_command += "taskset -c "+str(core)+" ./individual  &>/dev/null & "
         execution_command +=" sudo -S likwid-powermeter  -s "+str(self.timeToMeasure) +"s > tmp ; pkill individual ;" #make sure that msr module is loaded (modprobe msr)
-        output_command="cd "+self.targetRunDir + " ; cat tmp | grep Watt | head -n 1 | awk '{print $3}'; rm main.s; rm individual; rm tmp; "; #this grabs the package power
+        output_command="cd "+self.targetRunDir + " ; cat tmp | grep Watt | sed '2q;d' | awk '{print $3}'; rm main.s; rm individual; rm tmp; "; #this grabs the package power
         super().executeSSHcommand(compilation_command)
         super().executeSSHcommand(execution_command, sudo=True)
         stdout=super().executeSSHcommand(output_command)
