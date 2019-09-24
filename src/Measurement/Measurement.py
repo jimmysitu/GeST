@@ -46,7 +46,6 @@ class Measurement(ABC):
         self.targetHostname= self.tryGetStringValue('targetHostname')
         self.targetSSHusername= self.tryGetStringValue('targetSSHusername')
         self.targetSSHpassword = self.tryGetStringValue('targetSSHpassword')
-
         if "" == self.targetSSHpassword:
             self.targetSSHpassword = getpass.getpass(prompt="Please input target password: ", stream=None)
 
@@ -88,16 +87,19 @@ class Measurement(ABC):
         pass
 
     ## utility function for executing commands over ssh connection.. very common functionality
-    def executeSSHcommand(self,command,continousAttempt=True,max_tries=10):
+    def executeSSHcommand(self,command,continousAttempt=True,max_tries=10,sudo=False):
         tries=0
         while True:
             try:
                 ssh = SSHClient()
                 ssh.set_missing_host_key_policy(client.AutoAddPolicy())
                 ssh.connect(self.targetHostname, username=self.targetSSHusername, password=self.targetSSHpassword)
-                stdin, stdout, stderr = ssh.exec_command(command, get_pty=True)
-                print("std:%s" % stdout.readlines())
-                print("err:%s" % stderr.readlines())
+                stdin, stdout, stderr = ssh.exec_command(command)
+
+                if sudo:
+                    stdin.write(self.targetSSHpassword + "\n")
+                    stdin.flush()
+
                 lines=[]
                 for line in stdout.readlines():
                     lines.append(line)
