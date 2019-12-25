@@ -22,7 +22,8 @@ pip3 install visa
   - sudo modprobe msr
 
 ## Usage
-
+1. copy assembly_compilation_<arch> to compile dir(/tmp/GeST)
+2. Run command
 ```bash
 python3 ./src/__init.py <configure.xml>
 ```

@@ -356,7 +356,8 @@ class Algorithm(object):
                     measurement=measurements[0];
                     measurement_str="%.6f" % float(measurement);
                     break;
-                except (ValueError,IOError):
+                except (ValueError,IOError) as e:
+                    print(str(e));
                     continue;
 
             individual.setMeasurementsVector(measurements);
